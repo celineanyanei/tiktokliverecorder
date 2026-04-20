@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const consoleLog = document.getElementById('consoleLog');
   const stopBtn = document.getElementById('stopBtn');
   const saveFileBtn = document.getElementById('saveFileBtn');
+  const downloadFileBtn = document.getElementById('downloadFileBtn');
   const recordNewBtn = document.getElementById('recordNewBtn');
 
   let currentEventSource = null;
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     progressTime.textContent = '00:00:00';
     consoleLog.textContent = 'System Log Ready.\n';
     saveFileBtn.style.display = 'none';
+    downloadFileBtn.style.display = 'none';
     recordNewBtn.style.display = 'none';
     stopBtn.style.display = 'block';
     stopBtn.textContent = 'Stop Download';
@@ -170,17 +172,27 @@ document.addEventListener('DOMContentLoaded', () => {
       statusBadge.textContent = 'Success';
       statusBadge.className = 'badge success';
       progressFill.style.width = '100%';
-      appendLog(`✅ Finished! Video is safely saved inside the 'downloads' folder on your computer.`);
+      appendLog(`✅ Finished! Video is safely saved. Click 'Download MP4' to save it to your device.`);
       
+      const safeFile = data.outputFile.split('/').pop() || data.outputFile.split('\\').pop();
+      const downloadUrl = `/api/download-file?file=${encodeURIComponent(safeFile)}`;
+
       // Show the big green button to open the folder
       saveFileBtn.style.display = 'flex';
       saveFileBtn.onclick = async () => {
         try {
           await fetch('/api/open-folder', { method: 'POST' });
-          appendLog(`📂 Opening recordings folder...`);
+          appendLog(`📂 Opening local recordings folder...`);
         } catch (err) {
-          appendLog(`❌ Failed to open folder.`);
+          appendLog(`❌ Failed to open folder. Are you running on Cloud?`);
         }
+      };
+
+      // Show the download button for cloud users
+      downloadFileBtn.style.display = 'flex';
+      downloadFileBtn.onclick = () => {
+        window.location.href = downloadUrl;
+        appendLog(`📥 Downloading file via browser...`);
       };
 
       finishProcess();
@@ -238,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     statusCard.style.display = 'none';
     document.getElementById('url').value = '';
     saveFileBtn.style.display = 'none';
+    downloadFileBtn.style.display = 'none';
     recordNewBtn.style.display = 'none';
   });
 });
