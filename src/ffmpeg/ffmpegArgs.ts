@@ -41,9 +41,11 @@ export const ffmpegCommandMP4 = (
       '-fflags', '+genpts',
       '-i', liveUrl,
 
-      /* --- Stream Selection (skip subtitle tracks) --- */
-      '-map', '0:v:0',
-      '-map', '0:a:0',
+      /* --- Stream Selection (skip subtitle/data tracks) --- */
+      '-map', '0',
+      '-sn',                    // disable subtitles (TikTok text codec breaks MP4)
+      '-dn',                    // disable data streams
+      '-ignore_unknown',        // skip any unknown codec types
 
       /* --- Container and Metadata --- */
       '-c', 'copy',
@@ -96,9 +98,11 @@ export const ffmpegCommandMKV = (
       /* --- Input --- */
       '-i', liveUrl,
 
-      /* --- Stream Selection (skip subtitle tracks) --- */
-      '-map', '0:v:0',
-      '-map', '0:a:0',
+      /* --- Stream Selection (skip subtitle/data tracks) --- */
+      '-map', '0',
+      '-sn',                    // disable subtitles (TikTok text codec breaks containers)
+      '-dn',                    // disable data streams
+      '-ignore_unknown',        // skip any unknown codec types
 
       /* --- Video Encoding --- */
       '-c:v', 'libx265',

@@ -48,15 +48,32 @@ const logClients: any[] = [];
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
 
+// Patterns that spam thousands of lines/sec and crash the browser
+const NOISY_LOG_PATTERNS = [
+  'Non-monotonous DTS',
+  'non monotonically increasing dts',
+  'DTS out of order',
+  'changing to',
+  'discarding frame',
+];
+
+function isNoisyLog(text: string): boolean {
+  return NOISY_LOG_PATTERNS.some(p => text.includes(p));
+}
+
 process.stdout.write = (chunk: any, encoding?: any, cb?: any): boolean => {
   const text = chunk.toString();
-  logClients.forEach(c => c.write(`data: ${JSON.stringify(text)}\n\n`));
+  if (!isNoisyLog(text)) {
+    logClients.forEach(c => c.write(`data: ${JSON.stringify(text)}\n\n`));
+  }
   return originalStdoutWrite(chunk, encoding, cb);
 };
 
 process.stderr.write = (chunk: any, encoding?: any, cb?: any): boolean => {
   const text = chunk.toString();
-  logClients.forEach(c => c.write(`data: ${JSON.stringify(text)}\n\n`));
+  if (!isNoisyLog(text)) {
+    logClients.forEach(c => c.write(`data: ${JSON.stringify(text)}\n\n`));
+  }
   return originalStderrWrite(chunk, encoding, cb);
 };
 
