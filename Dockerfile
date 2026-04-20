@@ -30,8 +30,9 @@ RUN npm run build:server
 # Ensure downloads directory exists
 RUN mkdir -p downloads
 
-# Expose the default port
-EXPOSE 3000
+# Hugging Face Spaces requires applications to run on port 7860
+EXPOSE 7860
+ENV PORT=7860
 
 # Start the application
 CMD ["node", "build/server.js"]
