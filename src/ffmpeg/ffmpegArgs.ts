@@ -34,7 +34,8 @@ export const ffmpegCommandMP4 = (
       '-reconnect_delay_max', '5',
       '-rw_timeout', '8000000', // timeout in microseconds
       '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-      '-probesize', '8M',
+      '-probesize', '1M',
+      '-analyzeduration', '2M',
 
       /* --- Input --- */
       '-use_wallclock_as_timestamps', '1',
