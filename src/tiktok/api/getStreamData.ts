@@ -60,39 +60,37 @@ async function getStreamInfo(
     )
   }
 
-  return (() => {
-    const flvUrls = response.data.stream_url?.flv_pull_url || {}
-    // Try multiple quality levels — some streams only have certain qualities
-    const qualityOrder = ['FULL_HD1', 'HD1', 'SD1', 'SD2', 'ORIGIN']
-    let selectedUrl = ''
-    let selectedQuality = ''
+  const flvUrls: Record<string, string> = response.data.stream_url?.flv_pull_url || {}
+  // Try multiple quality levels — some streams only have certain qualities
+  const qualityOrder = ['FULL_HD1', 'HD1', 'SD1', 'SD2', 'ORIGIN']
+  let selectedUrl = ''
+  let selectedQuality = ''
 
-    for (const quality of qualityOrder) {
-      if (flvUrls[quality]) {
-        selectedUrl = flvUrls[quality]
-        selectedQuality = quality
-        break
-      }
+  for (const quality of qualityOrder) {
+    if (flvUrls[quality]) {
+      selectedUrl = flvUrls[quality]
+      selectedQuality = quality
+      break
     }
+  }
 
-    // Fallback: pick the first available URL from whatever keys exist
-    if (!selectedUrl) {
-      const keys = Object.keys(flvUrls)
-      if (keys.length > 0) {
-        selectedUrl = flvUrls[keys[0]]
-        selectedQuality = keys[0]
-      }
+  // Fallback: pick the first available URL from whatever keys exist
+  if (!selectedUrl) {
+    const keys = Object.keys(flvUrls)
+    if (keys.length > 0) {
+      selectedUrl = flvUrls[keys[0]]
+      selectedQuality = keys[0]
     }
+  }
 
-    if (selectedQuality) {
-      console.info(`\n📺 Stream quality selected: ${selectedQuality}`)
-    }
+  if (selectedQuality) {
+    console.info(`\n📺 Stream quality selected: ${selectedQuality}`)
+  }
 
-    return {
-      liveUrl: selectedUrl,
-      liveTitle: response.data.title,
-      liveUser: response.data.owner?.nickname || 'Unknown',
-      liveStatus: response.data.status,
-    }
-  })()
+  return {
+    liveUrl: selectedUrl,
+    liveTitle: response.data.title,
+    liveUser: response.data.owner?.nickname || 'Unknown',
+    liveStatus: response.data.status,
+  }
 }
