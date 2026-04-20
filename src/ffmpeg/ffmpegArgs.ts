@@ -21,6 +21,12 @@ export const ffmpegCommandMP4 = (
   return {
     cmd: `ffmpeg`,
     args: [
+      /* --- Global Options (MUST be before -i) --- */
+      '-y',                     // overwrite output files (prevents 0KB leftover blocking)
+      '-hide_banner',
+      '-loglevel', 'info',
+      '-stats',
+
       /* --- Network Resilience --- */
       '-reconnect', '1',
       '-reconnect_streamed', '1',
@@ -34,7 +40,10 @@ export const ffmpegCommandMP4 = (
       '-use_wallclock_as_timestamps', '1',
       '-fflags', '+genpts',
       '-i', liveUrl,
-      '-map', '0',
+
+      /* --- Stream Selection (skip subtitle tracks) --- */
+      '-map', '0:v:0',
+      '-map', '0:a:0',
 
       /* --- Container and Metadata --- */
       '-c', 'copy',
@@ -48,12 +57,6 @@ export const ffmpegCommandMP4 = (
       /* --- Output Format --- */
       '-f', 'mp4',
       fileName,
-
-      /* --- Safety & Logging --- */
-      '-hide_banner',
-      '-loglevel', 'info',
-      '-stats',
-      '-n'
     ],
   }
 }
@@ -76,6 +79,12 @@ export const ffmpegCommandMKV = (
   return {
     cmd: `ffmpeg`,
     args: [
+      /* --- Global Options (MUST be before -i) --- */
+      '-y',                     // overwrite output files (prevents 0KB leftover blocking)
+      '-hide_banner',
+      '-loglevel', 'info',
+      '-stats',
+
       /* --- Network Resilience --- */
       '-reconnect', '1',
       '-reconnect_streamed', '1',
@@ -83,12 +92,13 @@ export const ffmpegCommandMKV = (
       '-reconnect_delay_max', '5',
       '-rw_timeout', '8000000', // timeout in microseconds
       '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-      
+
       /* --- Input --- */
       '-i', liveUrl,
-      
-      /* --- Flow Selection --- */
-      '-map', '0',
+
+      /* --- Stream Selection (skip subtitle tracks) --- */
+      '-map', '0:v:0',
+      '-map', '0:a:0',
 
       /* --- Video Encoding --- */
       '-c:v', 'libx265',
@@ -109,12 +119,6 @@ export const ffmpegCommandMKV = (
       /* --- MKV Container --- */
       '-f', 'matroska',
       fileName,
-
-      /* --- Safety & Logging --- */
-      '-hide_banner',
-      '-loglevel', 'error',
-      '-stats',
-      '-n',
     ],
   }
 }

@@ -11,6 +11,12 @@ export const runFfmpeg = ({
 
   const proc = spawn(cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] })
 
+  proc.stdout.setEncoding('utf8')
+  proc.stdout.on('data', (chunk) => {
+    process.stdout.write(chunk)
+    emitter.emit('progress', chunk)
+  })
+
   proc.stderr.setEncoding('utf8')
   proc.stderr.on('data', (chunk) => {
     process.stderr.write(chunk)
