@@ -15,10 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveFileBtn = document.getElementById('saveFileBtn');
   const downloadFileBtn = document.getElementById('downloadFileBtn');
   const recordNewBtn = document.getElementById('recordNewBtn');
+  const recIndicator = document.getElementById('recIndicator');
 
   let currentEventSource = null;
   let currentTaskId = null;
   let videoPlayer = null;
+  let recTimerInterval = null;
+  let recStartTime = null;
+  let isRecording = false;
 
   function startVideoPreview(taskId) {
     const videoContainer = document.getElementById('videoContainer');
@@ -137,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentEventSource.addEventListener('start', (e) => {
       const data = JSON.parse(e.data);
       statusTitle.textContent = data.title || 'Downloading...';
-      statusBadge.textContent = 'Downloading';
-      btnText.textContent = 'Downloading...';
+      statusBadge.textContent = 'Connecting';
+      btnText.textContent = 'Recording...';
       appendLog(`Started downloading: ${data.title}`);
       appendLog(`Output file: ${data.outputFile}`);
       startVideoPreview(id);
@@ -156,9 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sizeMatch) {
         const mb = (parseInt(sizeMatch[1]) / 1024).toFixed(2);
         progressSize.textContent = `${mb} MB`;
-        // Fake progress bar that just moves a bit since we don't know total size for live stream
         const currentWidth = parseFloat(progressFill.style.width) || 0;
         progressFill.style.width = Math.min(currentWidth + 0.5, 95) + '%';
+
+        // Show REC indicator on first real progress (FFmpeg is actually recording)
+        if (!isRecording) {
+          isRecording = true;
+          recIndicator.style.display = 'inline-flex';
+          statusBadge.textContent = 'Recording';
+          statusBadge.className = 'badge';
+          statusBadge.style.background = 'rgba(255, 68, 68, 0.2)';
+          statusBadge.style.color = '#ff6b6b';
+          startRecTimer();
+        }
       }
 
       if (timeMatch) {
@@ -226,6 +240,26 @@ document.addEventListener('DOMContentLoaded', () => {
     finishProcess();
   }
 
+  function startRecTimer() {
+    recStartTime = Date.now();
+    recTimerInterval = setInterval(() => {
+      const elapsed = Date.now() - recStartTime;
+      const s = Math.floor(elapsed / 1000) % 60;
+      const m = Math.floor(elapsed / 60000) % 60;
+      const h = Math.floor(elapsed / 3600000);
+      progressTime.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }, 1000);
+  }
+
+  function stopRecTimer() {
+    if (recTimerInterval) {
+      clearInterval(recTimerInterval);
+      recTimerInterval = null;
+    }
+    recStartTime = null;
+    isRecording = false;
+  }
+
   function finishProcess() {
     if (currentEventSource) {
       currentEventSource.close();
@@ -233,6 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     currentTaskId = null;
     stopVideoPreview();
+    stopRecTimer();
+    
+    // Hide REC indicator
+    recIndicator.style.display = 'none';
+    statusBadge.style.background = '';
+    statusBadge.style.color = '';
     
     // Reset Form buttons
     btn.disabled = false;

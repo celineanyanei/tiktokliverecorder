@@ -59,7 +59,13 @@
     <div id="statusCard" class="card status-card" style="display: none;">
       <div class="status-header">
         <h3 id="statusTitle">Connecting...</h3>
-        <span id="statusBadge" class="badge">Processing</span>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span id="recIndicator" class="rec-indicator" style="display: none;">
+            <span class="rec-dot"></span>
+            REC
+          </span>
+          <span id="statusBadge" class="badge">Processing</span>
+        </div>
       </div>
       
       <div id="videoContainer" class="video-container">
@@ -101,6 +107,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

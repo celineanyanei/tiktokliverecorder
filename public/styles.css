@@ -241,6 +241,41 @@ select {
   color: var(--error);
 }
 
+/* OBS-style REC indicator */
+.rec-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.15);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  animation: rec-pulse 1.5s ease-in-out infinite;
+}
+
+.rec-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4444;
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.8);
+  animation: rec-dot-blink 1s ease-in-out infinite;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes rec-dot-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255, 68, 68, 0.8); }
+  50% { opacity: 0.4; box-shadow: 0 0 4px rgba(255, 68, 68, 0.4); }
+}
+
 .progress-container {
   margin-bottom: 1.5rem;
 }
