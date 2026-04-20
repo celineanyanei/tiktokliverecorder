@@ -20,8 +20,13 @@ export default async function setStreamData(
     throw new Error(`\n❌ The user is offline or the live stream url is empty!`)
   }
 
-  if (flvInfo.liveUrl && flvInfo.liveStatus === onlineStatus) {
-    console.info(`\n✅ Found ${flvInfo.liveUser} live stream url! 🎉`)
+  if (flvInfo.liveUrl) {
+    if (flvInfo.liveStatus !== onlineStatus) {
+      console.info(`\n⚠️ Note: Live status is ${flvInfo.liveStatus} (expected ${onlineStatus}), but stream URL was found. Proceeding...`);
+    } else {
+      console.info(`\n✅ Found ${flvInfo.liveUser} live stream url! 🎉`);
+    }
+    
     return {
       url: flvInfo.liveUrl,
       title: flvInfo.liveTitle,
@@ -31,9 +36,7 @@ export default async function setStreamData(
     }
   }
 
-  throw new Error(
-    `\n❌ No url live stream found! This user is offline or the live url is empty.\n`
-  ).message
+  throw new Error(`\n❌ No url live stream found! This user is offline or the live url is empty.\n`);
 }
 
 async function getStreamInfo(

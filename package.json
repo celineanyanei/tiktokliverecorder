@@ -6,6 +6,8 @@
   "scripts": {
     "build": "tsc",
     "esbuild": "esbuild ./src/cli/index.ts --bundle --platform=node --outfile=build/cli.js --alias:@app-cli=src/cli --alias:@app-core=src/core --alias:@app-ffmpeg=src/ffmpeg --alias:@app-cookies=src/cookies  --alias:@app-tiktok=src/tiktok --alias:@app-shared=src/shared --alias:@app-types=src/types",
+    "build:server": "esbuild ./src/server/index.ts --bundle --platform=node --outfile=build/server.js --alias:@app-cli=src/cli --alias:@app-core=src/core --alias:@app-ffmpeg=src/ffmpeg --alias:@app-cookies=src/cookies  --alias:@app-tiktok=src/tiktok --alias:@app-shared=src/shared --alias:@app-types=src/types",
+    "ui": "npm run build:server && node build/server.js",
     "start": "node build/app.js",
     "clear": "rimraf build"
   },
@@ -26,6 +28,7 @@
   },
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "@types/shelljs": "^0.8.15",
     "@types/web": "^0.0.228",
@@ -36,6 +39,7 @@
   },
   "dependencies": {
     "commander": "^13.1.0",
+    "express": "^5.2.1",
     "puppeteer": "^24.7.2"
   }
 }

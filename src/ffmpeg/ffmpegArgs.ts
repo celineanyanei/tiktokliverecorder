@@ -50,7 +50,6 @@ export const ffmpegCommandMP4 = (
       fileName,
 
       /* --- Safety & Logging --- */
-      '-nostdin',
       '-hide_banner',
       '-loglevel', 'info',
       '-stats',
@@ -112,7 +111,6 @@ export const ffmpegCommandMKV = (
       fileName,
 
       /* --- Safety & Logging --- */
-      '-nostdin',
       '-hide_banner',
       '-loglevel', 'error',
       '-stats',
