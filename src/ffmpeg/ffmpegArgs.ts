@@ -41,16 +41,15 @@ export const ffmpegCommandMP4 = (
       '-fflags', '+genpts',
       '-i', liveUrl,
 
-      /* --- Stream Selection (skip subtitle/data tracks) --- */
-      '-map', '0',
-      '-sn',                    // disable subtitles (TikTok text codec breaks MP4)
-      '-dn',                    // disable data streams
-      '-ignore_unknown',        // skip any unknown codec types
+      /* --- Stream Selection (exclude subtitle/data via negative mapping) --- */
+      '-map', '0',              // map all streams first
+      '-map', '-0:s',           // then REMOVE subtitle streams
+      '-map', '-0:d',           // then REMOVE data streams
 
       /* --- Container and Metadata --- */
       '-c', 'copy',
       '-map_metadata', '0',
-      /* '-movflags', '+frag_keyframe+empty_moov+use_metadata_tags+faststart', */
+      '-movflags', '+frag_keyframe+empty_moov',  // write header upfront so file is playable even if interrupted
       '-metadata', `title=${title}`,
       '-metadata', `artist=${username}`,
       '-metadata', `date=${year}`,
@@ -98,11 +97,10 @@ export const ffmpegCommandMKV = (
       /* --- Input --- */
       '-i', liveUrl,
 
-      /* --- Stream Selection (skip subtitle/data tracks) --- */
-      '-map', '0',
-      '-sn',                    // disable subtitles (TikTok text codec breaks containers)
-      '-dn',                    // disable data streams
-      '-ignore_unknown',        // skip any unknown codec types
+      /* --- Stream Selection (exclude subtitle/data via negative mapping) --- */
+      '-map', '0',              // map all streams first
+      '-map', '-0:s',           // then REMOVE subtitle streams
+      '-map', '-0:d',           // then REMOVE data streams
 
       /* --- Video Encoding --- */
       '-c:v', 'libx265',
